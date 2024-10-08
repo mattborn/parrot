@@ -1,54 +1,63 @@
-const startButton = document.getElementById("startButton");
-const stopButton = document.getElementById("stopButton");
 const output = document.getElementById("output");
+const status = document.getElementById("status");
 
 let recognition;
-let isListening = false;
 
-if ("webkitSpeechRecognition" in window) {
-  recognition = new webkitSpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = true;
+function initializeSpeechRecognition() {
+  if ("webkitSpeechRecognition" in window) {
+    recognition = new webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
 
-  recognition.onresult = (event) => {
-    const result = event.results[event.results.length - 1];
-    const transcript = result[0].transcript;
-    output.textContent = transcript;
+    recognition.onstart = () => {
+      status.textContent = "Listening...";
+    };
 
-    if (result.isFinal) {
-      speakText(transcript);
-    }
-  };
+    recognition.onresult = (event) => {
+      const result = event.results[event.results.length - 1];
+      const transcript = result[0].transcript;
+      output.textContent = transcript;
 
-  recognition.onerror = (event) => {
-    console.error("Speech recognition error:", event.error);
-  };
-} else {
-  console.error("Speech recognition not supported");
-  startButton.disabled = true;
-  stopButton.disabled = true;
-  output.textContent = "Speech recognition is not supported in this browser.";
-}
+      if (result.isFinal) {
+        speakText(transcript);
+      }
+    };
 
-startButton.addEventListener("click", () => {
-  if (!isListening) {
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+      status.textContent = "Error occurred. Please refresh the page.";
+    };
+
+    recognition.onend = () => {
+      // Restart recognition if it ends
+      recognition.start();
+    };
+
+    // Start recognition
     recognition.start();
-    isListening = true;
-    startButton.disabled = true;
-    stopButton.disabled = false;
+  } else {
+    console.error("Speech recognition not supported");
+    status.textContent = "Speech recognition is not supported in this browser.";
   }
-});
-
-stopButton.addEventListener("click", () => {
-  if (isListening) {
-    recognition.stop();
-    isListening = false;
-    startButton.disabled = false;
-    stopButton.disabled = true;
-  }
-});
+}
 
 function speakText(text) {
   const utterance = new SpeechSynthesisUtterance(text);
   speechSynthesis.speak(utterance);
 }
+
+// Initialize speech recognition when the page loads
+document.addEventListener("DOMContentLoaded", initializeSpeechRecognition);
+
+// Handle visibility change to restart recognition when the tab becomes active
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    if (recognition) {
+      recognition.start();
+    }
+  } else {
+    if (recognition) {
+      recognition.stop();
+    }
+  }
+});
