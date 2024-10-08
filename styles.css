@@ -3,7 +3,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   background-color: #f0f0f0;
 }
@@ -18,22 +18,58 @@ body {
   width: 100%;
 }
 
-button {
-  margin: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  cursor: pointer;
+h1 {
+  margin-bottom: 1rem;
 }
 
-#output {
-  margin-top: 1rem;
-  padding: 1rem;
+#listeningIndicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #4caf50;
+  margin: 0 auto 1rem;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+#activityLog {
+  text-align: left;
+  height: 300px;
+  overflow-y: auto;
   border: 1px solid #ccc;
+  padding: 1rem;
   border-radius: 5px;
-  min-height: 100px;
 }
 
-#status {
-  font-style: italic;
+.log-entry {
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.status {
   color: #666;
+  font-style: italic;
+}
+
+.transcript {
+  color: #333;
 }
